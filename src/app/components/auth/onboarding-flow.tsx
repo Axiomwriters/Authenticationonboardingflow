@@ -11,6 +11,7 @@ import { ThemeToggle } from "../theme-toggle";
 type Role = "buyer" | "host" | "agent" | "professional";
 
 interface FormData {
+  fullName: string;
   phone: string;
   kenyanId?: string;
   location?: string;
@@ -28,6 +29,7 @@ export function OnboardingFlow() {
   const { role } = useParams<{ role: Role }>();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
+    fullName: "",
     phone: "",
     kenyanId: "",
     location: "",
@@ -93,14 +95,17 @@ export function OnboardingFlow() {
   };
 
   const canProceed = () => {
-    // Buyer role has optional phone
-    if (role === "buyer") {
-      return true; // Always can proceed for buyer
-    }
-    
-    // Step 1: Phone required for all non-buyer roles
+    // Step 1: Full name always required, phone required for non-buyer roles
     if (currentStep === 1) {
-      return formData.phone.length > 0;
+      const hasFullName = formData.fullName.trim().length > 0;
+      const hasPhone = formData.phone.length > 0;
+      
+      if (role === "buyer") {
+        // Buyer only needs full name
+        return hasFullName;
+      }
+      // All other roles need both full name and phone
+      return hasFullName && hasPhone;
     }
     
     // Final step for host, agent, professional: require ID, location, and ID document
@@ -163,13 +168,37 @@ export function OnboardingFlow() {
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="fullName">
+                      Full Name <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder={
+                        role === "professional" 
+                          ? "e.g., John Doe (Architect)" 
+                          : "e.g., John Doe"
+                      }
+                      value={formData.fullName}
+                      onChange={(e) =>
+                        setFormData({ ...formData, fullName: e.target.value })
+                      }
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {role === "professional"
+                        ? "Your name and professional title (e.g., Architect, Engineer, Contractor)"
+                        : "Your full legal name as it appears on your ID"}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="phone">
                       Phone Number {role !== "buyer" && <span className="text-destructive">*</span>}
                     </Label>
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+254 700 000000"
                       value={formData.phone}
                       onChange={(e) =>
                         setFormData({ ...formData, phone: e.target.value })
