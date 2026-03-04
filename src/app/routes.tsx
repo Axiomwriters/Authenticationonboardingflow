@@ -2,6 +2,9 @@ import { createBrowserRouter } from "react-router";
 import { AuthScreen } from "./components/auth/auth-screen";
 import { IntentSelectionScreen } from "./components/auth/intent-selection-screen";
 import { OnboardingFlow } from "./components/auth/onboarding-flow";
+import { ForgotPasswordScreen } from "./components/auth/forgot-password-screen";
+import { ResetPasswordScreen } from "./components/auth/reset-password-screen";
+import { EmailVerificationScreen } from "./components/auth/email-verification-screen";
 
 // Simple not found component
 function NotFound() {
@@ -30,6 +33,18 @@ export const router = createBrowserRouter([
   {
     path: "/onboarding/:role",
     Component: OnboardingFlow,
+  },
+  {
+    path: "/forgot-password",
+    Component: ForgotPasswordScreen,
+  },
+  {
+    path: "/reset-password",
+    Component: ResetPasswordScreen,
+  },
+  {
+    path: "/verify-email",
+    Component: EmailVerificationScreen,
   },
   {
     path: "*",
